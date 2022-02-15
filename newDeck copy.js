@@ -85,13 +85,73 @@ let playerWins = 0;
 let cpu1Wins = 0;
 let cpu2Wins = 0;
 
+let winner = function (p1, p2, p3) {
+  if (p1[0].rank !== p2[0].rank && p2[0].rank !== p3[0].rank) {
+    if (p1[0].rank > p2[0].rank && p1[0].rank > p3[0].rank) {
+      cl("Player has won this round!");
+      return (playerWins += 1);
+    } else if (p2[0].rank > p1[0].rank && p2[0].rank > p3[0].rank) {
+      cl("Cpu-1 has won this round!");
+      return (cpu1Wins += 1);
+    } else {
+      cl("Cpu-2 has won this round!");
+      return (cpu2Wins += 1);
+    }
+  } else {
+    switch ((p1, p2, p3)) {
+      case p1[0].color === "Black" &&
+        p2[0].color === "Red" &&
+        p3[0].color === "Red":
+        cl("Player has won this round!");
+        return (playerWins += 1);
+
+      case p2[0].color === "Black" &&
+        p1[0].color === "Red" &&
+        p3[0].color === "Red":
+        cl("Cpu-1 has won this round!");
+        return (cpu1Wins += 1);
+
+      case p3[0].color === "Black" &&
+        p2[0].color === "Red" &&
+        p1[0].color === "Red":
+        cl("Cpu-2 has won this round!");
+        return (cpu2Wins += 1);
+
+      case p1[0].suit === "Spades":
+        cl("Player has won this round!");
+        return (playerWins += 1);
+
+      case p2[0].suit === "Spades":
+        cl("Cpu-1 has won this round!");
+        return (cpu1Wins += 1);
+
+      case p3[0].suit === "Spades":
+        cl("Cpu-2 has won this round!");
+        return (cpu2Wins += 1);
+
+      case p1[0].suit === "Diamonds":
+        cl("Player has won this round!");
+        return (playerWins += 1);
+
+      case p2[0].suit === "Diamonds":
+        cl("Cpu-1 has won this round!");
+        return (cpu1Wins += 1);
+
+      case p3[0].suit === "Diamonds":
+        cl("Cpu-2 has won this round!");
+        return (cpu2Wins += 1);
+    }
+  }
+};
+
 let gameRound = function (number) {
   let determine = parseInt(number, 10);
   let choice = players.player.splice(determine - 1, 1);
   players.player.push(dealCard());
+  cl("--------------------------------------------------");
   cl("You played:");
   ct(choice);
-
+  cl("--------------------------------------------------");
   rl.pause();
 
   let cpu1Play = players.cpu1.splice(
@@ -100,6 +160,7 @@ let gameRound = function (number) {
   );
   cl("Cpu-1 played:");
   ct(cpu1Play);
+  cl("--------------------------------------------------");
 
   let cpu2Play = players.cpu2.splice(
     Math.floor(Math.random() * players.cpu2.length),
@@ -107,12 +168,14 @@ let gameRound = function (number) {
   );
   cl("Cpu-2 played:");
   ct(cpu2Play);
+  cl("--------------------------------------------------");
 
   winner(choice, cpu1Play, cpu2Play);
 
-  cl(playerWins);
-  cl(cpu1Wins);
-  cl(cpu2Wins);
+  cl("--------------------------------------------------");
+  // cl(playerWins);
+  // cl(cpu1Wins);
+  // cl(cpu2Wins);
 
   cl("Your hand:");
   ct(players.player);
@@ -126,57 +189,3 @@ rl.on("SIGINT", () => {
     }
   });
 });
-
-let winner = function (p1, p2, p3) {
-  if (p1.rank !== p2.rank && p2.rank !== p3.rank) {
-    if (p1.rank > p2.rank && p1.rank > p3.rank) {
-      cl("Player has won this round!");
-      playerWins += 1;
-    } else if (p2.rank > p1.rank && p2.rank > p3.rank) {
-      cl("Cpu-1 has won this round!");
-      cpu1Wins += 1;
-    } else {
-      cl("Cpu-2 has won this round!");
-      cpu2Wins += 1;
-    }
-  } else {
-    switch ((p1, p2, p3)) {
-      case p1.color === "Black" && p2.color === "Red" && p3.color === "Red":
-        cl("Player has won this round!");
-        playerWins += 1;
-        break;
-      case p2.color === "Black" && p1.color === "Red" && p3.color === "Red":
-        cl("Cpu-1 has won this round!");
-        cpu1Wins += 1;
-        break;
-      case p3.color === "Black" && p2.color === "Red" && p1.color === "Red":
-        cl("Cpu-2 has won this round!");
-        cpu2Wins += 1;
-        break;
-      case p1.suit === "Spades":
-        cl("Player has won this round!");
-        playerWins += 1;
-        break;
-      case p2.suit === "Spades":
-        cl("Cpu-1 has won this round!");
-        cpu1Wins += 1;
-        break;
-      case p3.suit === "Spades":
-        cl("Cpu-2 has won this round!");
-        cpu2Wins += 1;
-        break;
-      case p1.suit === "Diamonds":
-        cl("Player has won this round!");
-        playerWins += 1;
-        break;
-      case p2.suit === "Diamonds":
-        cl("Cpu-1 has won this round!");
-        cpu1Wins += 1;
-        break;
-      case p3.suit === "Diamonds":
-        cl("Cpu-2 has won this round!");
-        cpu2Wins += 1;
-        break;
-    }
-  }
-};
