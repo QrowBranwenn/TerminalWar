@@ -6,7 +6,7 @@
     2. Highest card wins.
     3. If there is a tie, Black trumps Red.
     4. If there is still a tie, Spades beat Clubs and Diamonds beat Hearts.
-    5. Finally, if you wish to end the game early, simply press control+c.
+    5. Finally, if you wish to end the game early, simply press control+c. (You will still receive a winner).
    
   Whichever player wins the most rounds, wins the game!
 
@@ -221,11 +221,11 @@ let gameRound = function (number) {
 
 let finalScore = function (p1, p2, p3) {
   if (p1 > p2 && p1 > p3) {
-    return `Player has the most wins with ${p1}!`;
+    return `Player has the most wins with ${p1} in total!`;
   } else if (p2 > p1 && p2 > p3) {
-    return `Cpu-1 has the most wins with ${p2}!`;
+    return `Cpu-1 has the most wins with ${p2} in total!`;
   } else if (p3 > p1 && p3 > p2) {
-    return `Cpu-2 has the most wins with ${p3}!`;
+    return `Cpu-2 has the most wins with ${p3} in total!`;
   } else {
     if (p1 === p2) {
       return `Player and Cpu-1 have tied with ${p1} wins each!`;
