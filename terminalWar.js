@@ -1,13 +1,17 @@
 /* 
 Hello! Welcome to my 100% JavaScript card game!
 
-This game is a combination of both War and Speed.
+This game is heavily based of the card game War.
+The goal is to create a royal straight with your hand and win the round.
+If no player is able to reach the goal, then the player with the highest number of rounds won, wins the game.
+
 The rules are simple:
 1. Select a card from your hand to play by inputting a number that corresponds to the card you wish to play.
-2. Highest card wins (aces are high).
+2. Highest card wins (aces are always high).
 3. If there is a tie, Black trumps Red.
 4. If there is still a tie, Spades beat Clubs and Diamonds beat Hearts.
 5. If 3 or more players tie, nobody wins.
+6. If at any point you have a royal straight (ace, king, queen, jack, ten), you automatically win the game! 
 
 Console commands:
   # - Plays the corresponding card from your hand
@@ -15,13 +19,12 @@ Console commands:
   cRound - Change the maximum round count (WIP)
   ctrl+c - Exits the program (you will receive a prompt)
 
-You can change the total amount of rounds with the maxRound variable below OR by using the 'cRound' command during game-play.
 Whichever player wins the most rounds, wins the game!
 
 %Note that if you input something other than a number (or nothing at all), the game will automatically choose the first card in your hand%
 */
 
-let maxRound = 21;
+let maxRound = 25;
 
 const cl = console.log;
 
@@ -105,6 +108,21 @@ for (let i = 0; i < 5; i++) {
   players.cpu2.push(dealCard());
   players.cpu3.push(dealCard());
 }
+
+// Sorts player's hand by face value
+let compare = function (a, b) {
+  const cardA = a.rank;
+  const cardB = b.rank;
+
+  let comparison = 0;
+  if (cardA > cardB) {
+    comparison = 1;
+  } else if (cardA < cardB) {
+    comparison = -1;
+  }
+  return comparison * -1;
+};
+players.player = players.player.sort(compare);
 
 // Shows players hand and prompts them to select a card
 console.clear();
@@ -280,7 +298,12 @@ let winner = function (p1, p2, p3, p4) {
 
 // Runs after each user input.
 let gameRound = function (input) {
-  // Turns user input into a number (any non-number input is treated as a 1)
+  players.player.sort(compare);
+  players.cpu1.sort(compare);
+  players.cpu2.sort(compare);
+  players.cpu3.sort(compare);
+  players.player = players.player.sort(compare);
+  // Turns user input into a number
   let determine = parseInt(input, 10);
   /*
   1. If user input is a number greater than the hand size, an error will be displayed
@@ -314,7 +337,6 @@ let gameRound = function (input) {
     }
 
     // Displays current round # and player card choice
-    // Pauses readline
     cl("\x1b[1m", `Round: ${roundCount}`);
     cl("\x1b[1m", "--------------------------------------------------");
     cl("");
@@ -322,16 +344,14 @@ let gameRound = function (input) {
     cl(`The ${choice[0].name} of ${choice[0].suit}. Value: ${choice[0].rank}`);
     cl("");
     cl("\x1b[1m", "--------------------------------------------------");
+    // Pauses readline
     rl.pause();
 
     // Pushes user card choice to discard pile
     discardPile.push(choice[0]);
 
     // Cpu's played card
-    let cpu1Play = players.cpu1.splice(
-      Math.floor(Math.random() * players.cpu1.length),
-      1
-    );
+    let cpu1Play = players.cpu1.splice(0, 1);
     // Deals Cpu a new card
     if (deck.length !== 0) {
       players.cpu1.push(dealCard());
@@ -368,10 +388,7 @@ let gameRound = function (input) {
     discardPile.push(cpu2Play[0]);
 
     // Cpu's played card
-    let cpu3Play = players.cpu3.splice(
-      Math.floor(Math.random() * players.cpu3.length),
-      1
-    );
+    let cpu3Play = players.cpu3.splice(4, 1);
     // Deals Cpu a new card
     if (deck.length !== 0) {
       players.cpu3.push(dealCard());
@@ -393,17 +410,19 @@ let gameRound = function (input) {
     // Pushes Cpu card choice to discard pile
     discardPile.push(cpu3Play[0]);
   }
-
   /* 
   1. Detects when max round has been reached and ends game
   2. If the user inputs 'cRound', a prompt is displayed asking whether they'd like to increase or decrease or neither
   3. If the user inputs 'wins', a prompt appears asking for a player, then that players total round wins are displayed
+  4-7. Detects whether a player has achieved a royal straight
+  5. Loops code
   */
   if (roundCount === maxRound + 1) {
+    console.clear();
     cl("");
     cl("\x1b[0m\x1b[1m", "--------------------------------------------------");
     cl("");
-    cl("\x1b[0m\x1b[1m", "The game is over!");
+    cl("\x1b[0m\x1b[1m", "Maximum round has been reached! The game is over!");
     cl("");
     cl(finalScore(playerWins, cpu1Wins, cpu2Wins, cpu3Wins));
     cl("");
@@ -420,24 +439,27 @@ let gameRound = function (input) {
             "Would you like to increase or reduce the total rounds (in, re)?",
             (ans) => {
               if (ans === "in") {
-                rl.question("How many rounds would you like to add?", (ans) => {
-                  let newR = parseInt(ans, 10);
-                  maxRound += newR;
-                  console.clear();
-                  cl("");
-                  cl("\x1b[1m\x1b[0m", "Your hand:");
-                  cl("");
-                  for (let i = 1; i < players.player.length + 1; i++) {
-                    cl(
-                      `${i}) ${players.player[i - 1].name} of ${
-                        players.player[i - 1].suit
-                      }. Value: ${players.player[i - 1].rank}`
-                    );
+                rl.question(
+                  "How many rounds would you like to add? (Enter a string for infinite)",
+                  (ans) => {
+                    let newR = parseInt(ans, 10);
+                    maxRound += newR;
+                    console.clear();
+                    cl("");
+                    cl("\x1b[1m\x1b[0m", "Your hand:");
+                    cl("");
+                    for (let i = 1; i < players.player.length + 1; i++) {
+                      cl(
+                        `${i}) ${players.player[i - 1].name} of ${
+                          players.player[i - 1].suit
+                        }. Value: ${players.player[i - 1].rank}`
+                      );
+                    }
+                    cl("");
+                    rl.prompt();
+                    rl.resume();
                   }
-                  cl("");
-                  rl.prompt();
-                  rl.resume();
-                });
+                );
               } else if (ans === "re") {
                 rl.question(
                   "How many rounds would you like to subtract?",
@@ -571,7 +593,84 @@ let gameRound = function (input) {
         }
       }
     );
+  } else if (
+    players.player[0].rank === players.player[1].rank + 1 &&
+    players.player[0].rank === players.player[2].rank + 2 &&
+    players.player[0].rank === players.player[3].rank + 3 &&
+    players.player[0].rank === players.player[4].rank + 4
+  ) {
+    console.clear();
+    cl("");
+    cl("\x1b[0m\x1b[1m", "--------------------------------------------------");
+    cl("");
+    cl(
+      "\x1b[0m\x1b[1m",
+      "The game is over as Player has achieved a royal straight!"
+    );
+    cl("Congratulations!");
+    cl("");
+    cl("\x1b[0m\x1b[1m", "--------------------------------------------------");
+    cl("");
+    rl.close();
+  } else if (
+    players.cpu1[0].rank === players.cpu1[1].rank + 1 &&
+    players.cpu1[0].rank === players.cpu1[2].rank + 2 &&
+    players.cpu1[0].rank === players.cpu1[3].rank + 3 &&
+    players.cpu1[0].rank === players.cpu1[4].rank + 4
+  ) {
+    console.clear();
+    cl("");
+    cl("\x1b[0m\x1b[1m", "--------------------------------------------------");
+    cl("");
+    cl(
+      "\x1b[0m\x1b[1m",
+      "The game is over as Cpu-1 has achieved a royal straight!"
+    );
+    cl("Congratulations!");
+    cl("");
+    cl("\x1b[0m\x1b[1m", "--------------------------------------------------");
+    cl("");
+    rl.close();
+  } else if (
+    players.cpu2[0].rank === players.cpu2[1].rank + 1 &&
+    players.cpu2[0].rank === players.cpu2[2].rank + 2 &&
+    players.cpu2[0].rank === players.cpu2[3].rank + 3 &&
+    players.cpu2[0].rank === players.cpu2[4].rank + 4
+  ) {
+    console.clear();
+    cl("");
+    cl("\x1b[0m\x1b[1m", "--------------------------------------------------");
+    cl("");
+    cl(
+      "\x1b[0m\x1b[1m",
+      "The game is over as Cpu-2 has achieved a royal straight!"
+    );
+    cl("Congratulations!");
+    cl("");
+    cl("\x1b[0m\x1b[1m", "--------------------------------------------------");
+    cl("");
+    rl.close();
+  } else if (
+    players.cpu3[0].rank === players.cpu3[1].rank + 1 &&
+    players.cpu3[0].rank === players.cpu3[2].rank + 2 &&
+    players.cpu3[0].rank === players.cpu3[3].rank + 3 &&
+    players.cpu3[0].rank === players.cpu3[4].rank + 4
+  ) {
+    console.clear();
+    cl("");
+    cl("\x1b[0m\x1b[1m", "--------------------------------------------------");
+    cl("");
+    cl(
+      "\x1b[0m\x1b[1m",
+      "The game is over as Cpu-3 has achieved a royal straight!"
+    );
+    cl("Congratulations!");
+    cl("");
+    cl("\x1b[0m\x1b[1m", "--------------------------------------------------");
+    cl("");
+    rl.close();
   } else {
+    players.player.sort(compare);
     cl("");
     cl("\x1b[1m\x1b[0m", "Your hand:");
     cl("");
@@ -598,8 +697,8 @@ let finalScore = function (p1, p2, p3, p4) {
   } else if (p4 > p1 && p4 > p2 && p4 > p3) {
     return "\x1b[1m", `Cpu-3 has the most wins with ${p4} in total!`;
   } else {
-    if (p1 === 0) {
-      return "\x1b[1m", `No one's a winner!`;
+    if (p1 === p2) {
+      return "\x1b[1m", `Player and Cpu-1 have tied with ${p1} wins each!`;
     } else if (p1 === p3) {
       return "\x1b[1m", `Player and Cpu-2 have tied with ${p1} wins each!`;
     } else if (p2 === p3) {
@@ -610,10 +709,10 @@ let finalScore = function (p1, p2, p3, p4) {
       return "\x1b[1m", `Both Cpu-1 and Cpu-3 have tied with ${p2} wins each!`;
     } else if (p3 === p4) {
       return "\x1b[1m", `Both Cpu-2 and Cpu-3 have tied with ${p3} wins each!`;
-    } else if (p1 === p2) {
-      return "\x1b[1m", `Player and Cpu-1 have tied with ${p1} wins each!`;
+    } else if (p1 === 0) {
+      return "\x1b[1m", `No one's a winner!`;
     } else {
-      return "\x1b[1m", `Somehow, all players tied!`;
+      return "\x1b[1m", `Somehow, all players tied with ${p1} wins!`;
     }
   }
 };
