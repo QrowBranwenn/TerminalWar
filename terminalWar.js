@@ -298,6 +298,7 @@ let winner = function (p1, p2, p3, p4) {
 
 // Runs after each user input.
 let gameRound = function (input) {
+  let playedCard = true;
   players.player.sort(compare);
   players.cpu1.sort(compare);
   players.cpu2.sort(compare);
@@ -319,6 +320,172 @@ let gameRound = function (input) {
     cl("");
   } else if (input === "clear") {
     console.clear();
+  } else if (input === "cRound") {
+    console.clear();
+    rl.question(
+      "Would you like to change the number of rounds (y, n)?",
+      (ans) => {
+        if (ans.match(/^y(es)?$/i)) {
+          rl.question(
+            "Would you like to increase or reduce the total rounds (in, re)?",
+            (ans) => {
+              if (ans === "in") {
+                rl.question(
+                  "How many rounds would you like to add? (Enter a string for infinite)",
+                  (ans) => {
+                    let newR = parseInt(ans, 10);
+                    maxRound += newR;
+                    console.clear();
+                    cl("");
+                    cl("\x1b[1m\x1b[0m", "Your hand:");
+                    cl("");
+                    for (let i = 1; i < players.player.length + 1; i++) {
+                      cl(
+                        `${i}) ${players.player[i - 1].name} of ${
+                          players.player[i - 1].suit
+                        }. Value: ${players.player[i - 1].rank}`
+                      );
+                    }
+                    cl("");
+                    rl.prompt();
+                    rl.resume();
+                  }
+                );
+              } else if (ans === "re") {
+                rl.question(
+                  "How many rounds would you like to subtract?",
+                  (ans) => {
+                    let newR = parseInt(ans, 10);
+                    maxRound -= newR;
+                    console.clear();
+                    cl("");
+                    cl("\x1b[1m\x1b[0m", "Your hand:");
+                    cl("");
+                    for (let i = 1; i < players.player.length + 1; i++) {
+                      cl(
+                        `${i}) ${players.player[i - 1].name} of ${
+                          players.player[i - 1].suit
+                        }. Value: ${players.player[i - 1].rank}`
+                      );
+                    }
+                    cl("");
+                    rl.prompt();
+                    rl.resume();
+                  }
+                );
+              } else {
+                console.clear();
+                cl("Invalid Response");
+                cl("");
+                cl("\x1b[1m\x1b[0m", "Your hand:");
+                cl("");
+                for (let i = 1; i < players.player.length + 1; i++) {
+                  cl(
+                    `${i}) ${players.player[i - 1].name} of ${
+                      players.player[i - 1].suit
+                    }. Value: ${players.player[i - 1].rank}`
+                  );
+                }
+                cl("");
+                rl.prompt();
+                rl.resume();
+              }
+            }
+          );
+        } else {
+          console.clear();
+          cl("");
+          cl("\x1b[1m\x1b[0m", "Your hand:");
+          cl("");
+          for (let i = 1; i < players.player.length + 1; i++) {
+            cl(
+              `${i}) ${players.player[i - 1].name} of ${
+                players.player[i - 1].suit
+              }. Value: ${players.player[i - 1].rank}`
+            );
+          }
+          cl("");
+          rl.prompt();
+          rl.resume();
+        }
+      }
+    );
+    playedCard = false;
+  } else if (input === "wins") {
+    console.clear();
+    rl.question(
+      "Which player's wins would you like to check (play, cp1, cp2, cp3)?",
+      (ans) => {
+        if (ans === "play") {
+          console.clear();
+          cl(`This player has won ${playerWins} round(s)`);
+          cl("");
+          cl("\x1b[1m\x1b[0m", "Your hand:");
+          cl("");
+          for (let i = 1; i < players.player.length + 1; i++) {
+            cl(
+              `${i}) ${players.player[i - 1].name} of ${
+                players.player[i - 1].suit
+              }. Value: ${players.player[i - 1].rank}`
+            );
+          }
+          cl("");
+          rl.prompt();
+          rl.resume();
+        } else if (ans === "cp1") {
+          console.clear();
+          cl(`This player has won ${cpu1Wins} round(s)`);
+          cl("");
+          cl("\x1b[1m\x1b[0m", "Your hand:");
+          cl("");
+          for (let i = 1; i < players.player.length + 1; i++) {
+            cl(
+              `${i}) ${players.player[i - 1].name} of ${
+                players.player[i - 1].suit
+              }. Value: ${players.player[i - 1].rank}`
+            );
+          }
+          cl("");
+          rl.prompt();
+          rl.resume();
+        } else if (ans === "cp2") {
+          console.clear();
+          cl(`This player has won ${cpu2Wins} round(s)`);
+          cl("");
+          cl("\x1b[1m\x1b[0m", "Your hand:");
+          cl("");
+          for (let i = 1; i < players.player.length + 1; i++) {
+            cl(
+              `${i}) ${players.player[i - 1].name} of ${
+                players.player[i - 1].suit
+              }. Value: ${players.player[i - 1].rank}`
+            );
+          }
+          cl("");
+          rl.prompt();
+          rl.resume();
+        } else if (ans === "cp3") {
+          console.clear();
+          cl(`This player has won ${cpu3Wins} round(s)`);
+          cl("");
+          cl("\x1b[1m\x1b[0m", "Your hand:");
+          cl("");
+          for (let i = 1; i < players.player.length + 1; i++) {
+            cl(
+              `${i}) ${players.player[i - 1].name} of ${
+                players.player[i - 1].suit
+              }. Value: ${players.player[i - 1].rank}`
+            );
+          }
+          cl("");
+          rl.prompt();
+          rl.resume();
+        } else {
+          cl("Invalid response");
+        }
+      }
+    );
+    playedCard = false;
   } else {
     console.clear();
     // User selected card
@@ -429,170 +596,6 @@ let gameRound = function (input) {
     cl("\x1b[0m\x1b[1m", "--------------------------------------------------");
     cl("");
     rl.close();
-  } else if (input === "cRound") {
-    console.clear();
-    rl.question(
-      "Would you like to change the number of rounds (y, n)?",
-      (ans) => {
-        if (ans.match(/^y(es)?$/i)) {
-          rl.question(
-            "Would you like to increase or reduce the total rounds (in, re)?",
-            (ans) => {
-              if (ans === "in") {
-                rl.question(
-                  "How many rounds would you like to add? (Enter a string for infinite)",
-                  (ans) => {
-                    let newR = parseInt(ans, 10);
-                    maxRound += newR;
-                    console.clear();
-                    cl("");
-                    cl("\x1b[1m\x1b[0m", "Your hand:");
-                    cl("");
-                    for (let i = 1; i < players.player.length + 1; i++) {
-                      cl(
-                        `${i}) ${players.player[i - 1].name} of ${
-                          players.player[i - 1].suit
-                        }. Value: ${players.player[i - 1].rank}`
-                      );
-                    }
-                    cl("");
-                    rl.prompt();
-                    rl.resume();
-                  }
-                );
-              } else if (ans === "re") {
-                rl.question(
-                  "How many rounds would you like to subtract?",
-                  (ans) => {
-                    let newR = parseInt(ans, 10);
-                    maxRound -= newR;
-                    console.clear();
-                    cl("");
-                    cl("\x1b[1m\x1b[0m", "Your hand:");
-                    cl("");
-                    for (let i = 1; i < players.player.length + 1; i++) {
-                      cl(
-                        `${i}) ${players.player[i - 1].name} of ${
-                          players.player[i - 1].suit
-                        }. Value: ${players.player[i - 1].rank}`
-                      );
-                    }
-                    cl("");
-                    rl.prompt();
-                    rl.resume();
-                  }
-                );
-              } else {
-                console.clear();
-                cl("Invalid Response");
-                cl("");
-                cl("\x1b[1m\x1b[0m", "Your hand:");
-                cl("");
-                for (let i = 1; i < players.player.length + 1; i++) {
-                  cl(
-                    `${i}) ${players.player[i - 1].name} of ${
-                      players.player[i - 1].suit
-                    }. Value: ${players.player[i - 1].rank}`
-                  );
-                }
-                cl("");
-                rl.prompt();
-                rl.resume();
-              }
-            }
-          );
-        } else {
-          console.clear();
-          cl("");
-          cl("\x1b[1m\x1b[0m", "Your hand:");
-          cl("");
-          for (let i = 1; i < players.player.length + 1; i++) {
-            cl(
-              `${i}) ${players.player[i - 1].name} of ${
-                players.player[i - 1].suit
-              }. Value: ${players.player[i - 1].rank}`
-            );
-          }
-          cl("");
-          rl.prompt();
-          rl.resume();
-        }
-      }
-    );
-  } else if (input === "wins") {
-    console.clear();
-    rl.question(
-      "Which player's wins would you like to check (play, cp1, cp2, cp3)?",
-      (ans) => {
-        if (ans === "play") {
-          console.clear();
-          cl(`This player has won ${playerWins} round(s)`);
-          cl("");
-          cl("\x1b[1m\x1b[0m", "Your hand:");
-          cl("");
-          for (let i = 1; i < players.player.length + 1; i++) {
-            cl(
-              `${i}) ${players.player[i - 1].name} of ${
-                players.player[i - 1].suit
-              }. Value: ${players.player[i - 1].rank}`
-            );
-          }
-          cl("");
-          rl.prompt();
-          rl.resume();
-        } else if (ans === "cp1") {
-          console.clear();
-          cl(`This player has won ${cpu1Wins} round(s)`);
-          cl("");
-          cl("\x1b[1m\x1b[0m", "Your hand:");
-          cl("");
-          for (let i = 1; i < players.player.length + 1; i++) {
-            cl(
-              `${i}) ${players.player[i - 1].name} of ${
-                players.player[i - 1].suit
-              }. Value: ${players.player[i - 1].rank}`
-            );
-          }
-          cl("");
-          rl.prompt();
-          rl.resume();
-        } else if (ans === "cp2") {
-          console.clear();
-          cl(`This player has won ${cpu2Wins} round(s)`);
-          cl("");
-          cl("\x1b[1m\x1b[0m", "Your hand:");
-          cl("");
-          for (let i = 1; i < players.player.length + 1; i++) {
-            cl(
-              `${i}) ${players.player[i - 1].name} of ${
-                players.player[i - 1].suit
-              }. Value: ${players.player[i - 1].rank}`
-            );
-          }
-          cl("");
-          rl.prompt();
-          rl.resume();
-        } else if (ans === "cp3") {
-          console.clear();
-          cl(`This player has won ${cpu3Wins} round(s)`);
-          cl("");
-          cl("\x1b[1m\x1b[0m", "Your hand:");
-          cl("");
-          for (let i = 1; i < players.player.length + 1; i++) {
-            cl(
-              `${i}) ${players.player[i - 1].name} of ${
-                players.player[i - 1].suit
-              }. Value: ${players.player[i - 1].rank}`
-            );
-          }
-          cl("");
-          rl.prompt();
-          rl.resume();
-        } else {
-          cl("Invalid response");
-        }
-      }
-    );
   } else if (
     players.player[0].rank === players.player[1].rank + 1 &&
     players.player[0].rank === players.player[2].rank + 2 &&
@@ -669,7 +672,7 @@ let gameRound = function (input) {
     cl("\x1b[0m\x1b[1m", "--------------------------------------------------");
     cl("");
     rl.close();
-  } else {
+  } else if (playedCard === true) {
     players.player.sort(compare);
     cl("");
     cl("\x1b[1m\x1b[0m", "Your hand:");
